@@ -1,13 +1,13 @@
-Upload behavior for Yii 2    [中文](https://github.com/liyunfang/yii2-upload-behavior/blob/master/README-ZH-CN.md)  
+Upload behavior for Yii 2    [中文](https://github.com/haohetao/yii2-upload-behavior/blob/master/README-ZH-CN.md)  
 ===========================
 
 
-Note: Reference project https://github.com/mongosoft/yii2-upload-behavior
+Note: Reference project https://github.com/phpyii/yii2-upload-behavior
 
 This behavior automatically uploads file and fills the specified attribute with a value of the name of the uploaded file.
 
 
-![Effect picture 1](https://github.com/liyunfang/wr/blob/master/images/UploadBehavior1.png "Effect picture 1")  
+![Effect picture 1](https://github.com/haohetao/wr/blob/master/images/UploadBehavior1.png "Effect picture 1")  
 
 
 Installation
@@ -24,7 +24,7 @@ composer require --prefer-dist liyunfang/yii2-upload-behavior "*"
 or add this code line to the `require` section of your `composer.json` file:
 
 ```json
-"liyunfang/yii2-upload-behavior": "*"
+"haohetao/yii2-upload-behavior": "*"
 ```
 
 Usage
@@ -52,7 +52,7 @@ class Document extends ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasOne(Category::className(), [ 'id' => 'id_category' ]);
+        return $this->hasOne(Category::class, [ 'id' => 'id_category' ]);
     }
 
     /**
@@ -62,7 +62,7 @@ class Document extends ActiveRecord
     {
         return [
             [
-                'class' => UploadBehavior::className(),
+                'class' => UploadBehavior::class,
                 'attributes' => [
                     [
                         'attribute' => 'attachment',
@@ -143,7 +143,7 @@ class User extends ActiveRecord
     {
         return [
             [
-                'class' => \liyunfang\file\UploadImageBehavior::className(),
+                'class' => \liyunfang\file\UploadImageBehavior::class,
                 'attributes' => [
                     [
                         'attribute' => 'image',
@@ -237,7 +237,7 @@ Example view  multiple file:
 if you install  https://github.com/kartik-v/yii2-widget-fileinput
 
 ```php
-      $form->field($model, 'image')->widget(FileInput::classname(), [
+      $form->field($model, 'image')->widget(FileInput::class, [
           'options' => [
                 'accept' => 'image/*',
                 'multiple' => true,

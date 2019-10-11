@@ -1,11 +1,11 @@
-Upload behavior for Yii 2    [English](https://github.com/liyunfang/yii2-upload-behavior/blob/master/README.md)  
+Upload behavior for Yii 2    [English](https://github.com/haohetao/yii2-upload-behavior/blob/master/README.md)  
 ===========================
 
 注意: 参考项目 https://github.com/mongosoft/yii2-upload-behavior
 
 这个扩展会自动上传文件并填充指定的属性值和上传文件的名称。
 
-![Effect picture 1](https://github.com/liyunfang/wr/blob/master/images/UploadBehavior1.png "Effect picture 1")  
+![Effect picture 1](https://github.com/haohetao/wr/blob/master/images/UploadBehavior1.png "Effect picture 1")  
 
 
 安装
@@ -16,13 +16,13 @@ Upload behavior for Yii 2    [English](https://github.com/liyunfang/yii2-upload-
 编辑运行
 
 ```
-composer require --prefer-dist liyunfang/yii2-upload-behavior "*"
+composer require --prefer-dist haohetao/yii2-upload-behavior "*"
 ```
 
 或者在composer.json文件中的require部分添加如下代码:
 
 ```json
-"liyunfang/yii2-upload-behavior": "*"
+"haohetao/yii2-upload-behavior": "*"
 ```
 
 如何使用
@@ -50,7 +50,7 @@ class Document extends ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasOne(Category::className(), [ 'id' => 'id_category' ]);
+        return $this->hasOne(Category::class, [ 'id' => 'id_category' ]);
     }
 
     /**
@@ -60,7 +60,7 @@ class Document extends ActiveRecord
     {
         return [
             [
-                'class' => UploadBehavior::className(),
+                'class' => UploadBehavior::class,
                 'attributes' => [
                     [
                         'attribute' => 'attachment',//属性名
@@ -141,7 +141,7 @@ class User extends ActiveRecord
     {
         return [
             [
-                'class' => \liyunfang\file\UploadImageBehavior::className(),
+                'class' => \haohetao\file\UploadImageBehavior::className(),
                 'attributes' => [
                     [
                         'attribute' => 'image',

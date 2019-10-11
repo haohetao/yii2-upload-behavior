@@ -1,28 +1,28 @@
 {
-    "name": "liyunfang/yii2-upload-behavior",
+    "name": "haohetao/yii2-upload-behavior",
     "description": "Upload behavior for Yii 2",
     "keywords": ["yii2", "extension", "behavior", "file", "image", "upload", "resize", "thumb"],
-    "homepage": "https://github.com/liyunfang/yii2-upload-behavior",
+    "homepage": "https://github.com/haohetao/yii2-upload-behavior",
     "type": "yii2-extension",
     "license": "BSD 3-Clause",
     "support": {
-        "issues": "https://github.com/liyunfang/yii2-upload-behavior/issues?state=open",
-        "source": "https://github.com/liyunfang/yii2-upload-behavior"
+        "issues": "https://github.com/haohetao/yii2-upload-behavior/issues?state=open",
+        "source": "https://github.com/haohetao/yii2-upload-behavior"
     },
     "authors": [
         {
-            "name": "liyunfang",
-            "email": "381296986@qq.com"
+            "name": "haohetao",
+            "email": "haohetao@gmail.com"
         }
     ],
     "require": {
-        "php": ">=5.4.0",
-        "yiisoft/yii2": "*",
+        "php": ">=7.1.0",
+        "yiisoft/yii2": "~2.0.0",
         "yiisoft/yii2-imagine": "*"
     },
     "autoload": {
         "psr-4": {
-            "liyunfang\\file\\": ""
+            "haohetao\\file\\": "src"
         }
     }
 }
