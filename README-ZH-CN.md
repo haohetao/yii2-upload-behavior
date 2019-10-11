@@ -5,7 +5,7 @@ Upload behavior for Yii 2    [English](https://github.com/haohetao/yii2-upload-b
 
 这个扩展会自动上传文件并填充指定的属性值和上传文件的名称。
 
-![Effect picture 1](https://github.com/haohetao/wr/blob/master/images/UploadBehavior1.png "Effect picture 1")  
+![Effect picture 1](https://github.com/phpyii/wr/blob/master/images/UploadBehavior1.png "Effect picture 1")  
 
 
 安装

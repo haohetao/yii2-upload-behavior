@@ -7,7 +7,7 @@ Note: Reference project https://github.com/phpyii/yii2-upload-behavior
 This behavior automatically uploads file and fills the specified attribute with a value of the name of the uploaded file.
 
 
-![Effect picture 1](https://github.com/haohetao/wr/blob/master/images/UploadBehavior1.png "Effect picture 1")  
+![Effect picture 1](https://github.com/phpyii/wr/blob/master/images/UploadBehavior1.png "Effect picture 1")  
 
 
 Installation
