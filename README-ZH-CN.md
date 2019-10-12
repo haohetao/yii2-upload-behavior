@@ -1,7 +1,7 @@
 Upload behavior for Yii 2    [English](https://github.com/haohetao/yii2-upload-behavior/blob/master/README.md)  
 ===========================
 
-注意: 参考项目 https://github.com/mongosoft/yii2-upload-behavior
+注意: 参考项目 https://github.com/phpyii/yii2-upload-behavior
 
 这个扩展会自动上传文件并填充指定的属性值和上传文件的名称。
 
@@ -141,7 +141,7 @@ class User extends ActiveRecord
     {
         return [
             [
-                'class' => \haohetao\file\UploadImageBehavior::className(),
+                'class' => \haohetao\file\UploadImageBehavior::class,
                 'attributes' => [
                     [
                         'attribute' => 'image',
@@ -237,7 +237,7 @@ class User extends ActiveRecord
 配置如下
 
 ```php
-      $form->field($model, 'image')->widget(FileInput::classname(), [
+      $form->field($model, 'image')->widget(FileInput::class, [
           'options' => [
                 'accept' => 'image/*',
                 'multiple' => true,

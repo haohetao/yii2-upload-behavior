@@ -270,14 +270,14 @@ class Track extends ActiveRecord
 {
     public function getArtist()
     {
-        return $this->hasOne(Artist::className(), [ 'id' => 'id_artist' ]);
+        return $this->hasOne(Artist::class, [ 'id' => 'id_artist' ]);
     }
 
     public function behaviors()
     {
         return [
             [
-                'class' => UploadBehavior::className(),
+                'class' => UploadBehavior::class,
                 'attribute' => 'image',
                 'scenarios' => ['default'],
                 'path' => '@webroot/uploads/{artist.slug}',
