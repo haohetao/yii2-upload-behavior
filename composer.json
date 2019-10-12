@@ -4,7 +4,6 @@
     "keywords": ["yii2", "extension", "behavior", "file", "image", "upload", "resize", "thumb"],
     "homepage": "https://github.com/haohetao/yii2-upload-behavior",
     "type": "yii2-extension",
-    "license": "BSD 3-Clause",
     "support": {
         "issues": "https://github.com/haohetao/yii2-upload-behavior/issues?state=open",
         "source": "https://github.com/haohetao/yii2-upload-behavior"
