@@ -2,6 +2,7 @@
     "name": "haohetao/yii2-upload-behavior",
     "description": "Upload behavior for Yii 2",
     "keywords": ["yii2", "extension", "behavior", "file", "image", "upload", "resize", "thumb"],
+    "license": "BSD-3-Clause",
     "homepage": "https://github.com/haohetao/yii2-upload-behavior",
     "type": "yii2-extension",
     "support": {
