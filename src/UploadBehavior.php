@@ -246,7 +246,7 @@ class UploadBehavior extends \yii\base\Behavior
         /** @var BaseActiveRecord $model */
         $model = $this->owner;
         foreach ($this->attributes as $attribute => $attributeConfig) {
-            if ($this->hasScenario($attributeConfig)) {
+            if ($this->hasScenario($attributeConfig) && $model->isAttributeChanged($attribute)) {
                 $file = $this->getAttributeValue($attribute);
                 if (!$this->validateFile($file)) {
                     $file = $this->getUploadInstance($attribute);
@@ -273,7 +273,7 @@ class UploadBehavior extends \yii\base\Behavior
         /** @var BaseActiveRecord $model */
         $model = $this->owner;
         foreach ($this->attributes as $attribute => $attributeConfig) {
-            if ($this->hasScenario($attributeConfig)) {
+            if ($this->hasScenario($attributeConfig) && $model->isAttributeChanged($attribute)) {
                 if (isset($this->files[$attribute]) && $this->validateFile($this->files[$attribute])) {
                     if (!$model->getIsNewRecord() && $model->isAttributeChanged($attribute)) {
                         if ($this->getAttributeConfig($attributeConfig, 'unlinkOnSave') === true) {
@@ -313,7 +313,7 @@ class UploadBehavior extends \yii\base\Behavior
     {
         if ($this->files) {
             foreach ($this->files as $attribute => $file) {
-                if ($this->validateFile($file)) {
+                if ($this->hasScenario($attribute) && $model->isAttributeChanged($attribute) && $this->validateFile($file)) {
                     $basePath = $this->getUploaddirectory($attribute);
                     if (is_string($basePath) && FileHelper::createDirectory($basePath)) {
                         $this->save($attribute, $file, $basePath);
