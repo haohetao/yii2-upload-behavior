@@ -5,6 +5,7 @@ namespace haohetao\file;
 
 use Closure;
 use Yii;
+use yii\base\ErrorException;
 use yii\base\InvalidConfigException;
 use yii\base\InvalidArgumentException;
 use yii\db\BaseActiveRecord;
@@ -246,7 +247,7 @@ class UploadBehavior extends \yii\base\Behavior
         /** @var BaseActiveRecord $model */
         $model = $this->owner;
         foreach ($this->attributes as $attribute => $attributeConfig) {
-            if ($this->hasScenario($attributeConfig) && $model->isAttributeChanged($attribute)) {
+            if ($this->hasScenario($attributeConfig)) {
                 $file = $this->getAttributeValue($attribute);
                 if (!$this->validateFile($file)) {
                     $file = $this->getUploadInstance($attribute);
@@ -273,7 +274,7 @@ class UploadBehavior extends \yii\base\Behavior
         /** @var BaseActiveRecord $model */
         $model = $this->owner;
         foreach ($this->attributes as $attribute => $attributeConfig) {
-            if ($this->hasScenario($attributeConfig) && $model->isAttributeChanged($attribute)) {
+            if ($this->hasScenario($attributeConfig)) {
                 if (isset($this->files[$attribute]) && $this->validateFile($this->files[$attribute])) {
                     if (!$model->getIsNewRecord() && $model->isAttributeChanged($attribute)) {
                         if ($this->getAttributeConfig($attributeConfig, 'unlinkOnSave') === true) {
@@ -282,7 +283,7 @@ class UploadBehavior extends \yii\base\Behavior
                     }
                 } else {
                     // Protect attribute
-                    unset($model->$attribute);
+                    $model->$attribute = $this->resolveFileName($attribute, true);
                 }
             } else {
                 if (!$model->getIsNewRecord() && $model->isAttributeChanged($attribute)) {
@@ -313,7 +314,7 @@ class UploadBehavior extends \yii\base\Behavior
     {
         if ($this->files) {
             foreach ($this->files as $attribute => $file) {
-                if ($this->hasScenario($attribute) && $model->isAttributeChanged($attribute) && $this->validateFile($file)) {
+                if ($this->hasScenario($attribute) && $this->validateFile($file)) {
                     $basePath = $this->getUploaddirectory($attribute);
                     if (is_string($basePath) && FileHelper::createDirectory($basePath)) {
                         $this->save($attribute, $file, $basePath);
@@ -469,13 +470,17 @@ class UploadBehavior extends \yii\base\Behavior
             if (is_array($file)) {
                 foreach ($file as $f) {
                     $fileName = $this->getFileName($attribute, $f);
-                    $f->saveAs($path . '/' . $fileName, $deleteTempFile);
+                    if (!$f->saveAs($path . '/' . $fileName, $deleteTempFile)) {
+                        throw new ErrorException('save file failed:' . $fileName);
+                    }
                     $model->$attribute .= $fileName . $multipleSeparator;
                 }
                 $model->$attribute = trim($model->$attribute, $multipleSeparator);
             } else {
                 $fileName = $this->getFileName($attribute, $file);
-                $file->saveAs($path . '/' . $fileName, $deleteTempFile);
+                if (!$file->saveAs($path . '/' . $fileName, $deleteTempFile)) {
+                    throw new ErrorException('save file failed:' . $fileName);
+                }
                 $model->$attribute = $fileName;
             }
         } catch (\Exception $exc) {
