@@ -313,8 +313,9 @@ class UploadBehavior extends \yii\base\Behavior
     public function fileSave()
     {
         if ($this->files) {
+            $model = $this->owner;
             foreach ($this->files as $attribute => $file) {
-                if ($this->hasScenario($attribute) && $this->validateFile($file)) {
+                if ($this->hasScenario($attribute) && $model->isAttributeChanged($attribute) && $this->validateFile($file)) {
                     $basePath = $this->getUploaddirectory($attribute);
                     if (is_string($basePath) && FileHelper::createDirectory($basePath)) {
                         $this->save($attribute, $file, $basePath);
