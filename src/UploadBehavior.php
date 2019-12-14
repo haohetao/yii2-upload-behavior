@@ -283,7 +283,7 @@ class UploadBehavior extends \yii\base\Behavior
                     }
                 } else {
                     // Protect attribute
-                    $model->$attribute = $this->resolveFileName($attribute, true);
+                    unset($model->$attribute);
                 }
             } else {
                 if (!$model->getIsNewRecord() && $model->isAttributeChanged($attribute)) {
