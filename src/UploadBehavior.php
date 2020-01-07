@@ -245,7 +245,7 @@ class UploadBehavior extends \yii\base\Behavior
         foreach ($this->attributes as $attribute => $attributeConfig) {
             if ($this->hasScenario($attributeConfig)) {
                 $file = $this->getAttributeValue($attribute);
-                if (!$this->validateFile($file)) {
+                if (!$this->validateFile($file) && $model->isAttributeChanged($attribute)) {
                     $file = $this->getUploadInstance($attribute);
                 }
                 if (!isset($this->files[$attribute]) && $this->validateFile($file)) {
@@ -260,7 +260,6 @@ class UploadBehavior extends \yii\base\Behavior
             }
         }
     }
-
 
     /**
      * This method is called at the beginning of inserting or updating a record.
