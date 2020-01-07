@@ -526,15 +526,15 @@ class UploadBehavior extends \yii\base\Behavior
         $instanceByName = $this->getAttributeConfig($attribute, 'instanceByName');
         if ($instanceByName === true) {
             if ($multiple) {
-                $file = $this->isBase64()?UploadedFile::uploadBase64Files($attribute):UploadedFile::getInstancesByName($attribute);
+                $file = UploadedFile::getInstancesByName($attribute);
             } else {
-                $file = $this->isBase64()?UploadedFile::uploadBase64File($attribute):UploadedFile::getInstanceByName($attribute);
+                $file = UploadedFile::getInstanceByName($attribute);
             }
         } else {
             if ($multiple) {
-                $file = $this->isBase64()?UploadedFile::uploadBase64Files($attribute):UploadedFile::getInstances($model, $attribute);
+                $file = UploadedFile::getInstances($model, $attribute);
             } else {
-                $file = $this->isBase64()?UploadedFile::uploadBase64File($attribute):UploadedFile::getInstance($model, $attribute);
+                $file = UploadedFile::getInstance($model, $attribute);
             }
         }
         return $file;
@@ -651,27 +651,5 @@ class UploadBehavior extends \yii\base\Behavior
     protected function afterUpload()
     {
         $this->owner->trigger(self::EVENT_AFTER_UPLOAD);
-    }
-
-    /**
-     * 是否base64上传
-     * @return bool
-     */
-    public function isBase64()
-    {
-        $mime = Yii::$app->request->getContentType();
-        if (strtolower($mime) == 'application/json') {
-            return true;
-        }
-        if (strtolower($mime) == 'text/json') {
-            return true;
-        }
-        if (strtolower($mime) == 'application/javascript') {
-            return true;
-        }
-        if (strtolower($mime) == 'text/javascript') {
-            return true;
-        }
-        return false;
     }
 }
