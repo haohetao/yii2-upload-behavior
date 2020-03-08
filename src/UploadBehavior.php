@@ -245,7 +245,7 @@ class UploadBehavior extends \yii\base\Behavior
         foreach ($this->attributes as $attribute => $attributeConfig) {
             if ($this->hasScenario($attributeConfig)) {
                 $file = $this->getAttributeValue($attribute);
-                if (!$this->validateFile($file) && $model->isAttributeChanged($attribute)) {
+                if (!$this->validateFile($file)) {
                     $file = $this->getUploadInstance($attribute);
                 }
                 if (!isset($this->files[$attribute]) && $this->validateFile($file)) {
@@ -523,16 +523,14 @@ class UploadBehavior extends \yii\base\Behavior
         $model = $this->owner;
         $multiple = $this->getAttributeConfig($attribute, 'multiple');
         $instanceByName = $this->getAttributeConfig($attribute, 'instanceByName');
-        if ($instanceByName === true) {
-            if ($multiple) {
-                $file = UploadedFile::getInstancesByName($attribute);
-            } else {
-                $file = UploadedFile::getInstanceByName($attribute);
+        if ($multiple) {
+            $file = UploadedFile::getInstancesByName($attribute);
+            if (!$file) {
+                $file = UploadedFile::getInstances($model, $attribute);
             }
         } else {
-            if ($multiple) {
-                $file = UploadedFile::getInstances($model, $attribute);
-            } else {
+            $file = UploadedFile::getInstanceByName($attribute);
+            if (!$file) {
                 $file = UploadedFile::getInstance($model, $attribute);
             }
         }
