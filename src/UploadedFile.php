@@ -212,16 +212,16 @@ class UploadedFile extends \yii\web\UploadedFile
     public static function isBase64()
     {
         $mime = Yii::$app->request->getContentType();
-        if (strtolower($mime) == 'application/json') {
+        if (strncasecmp ($mime,'application/json' ,16) === 0) {
             return true;
         }
-        if (strtolower($mime) == 'text/json') {
+        if (strncasecmp($mime, 'text/json', 9) === 0) {
             return true;
         }
-        if (strtolower($mime) == 'application/javascript') {
+        if (strncasecmp($mime, 'application/javascript', 22) === 0) {
             return true;
         }
-        if (strtolower($mime) == 'text/javascript') {
+        if (strncasecmp($mime ,'text/javascript', 15) === 0) {
             return true;
         }
         return false;
