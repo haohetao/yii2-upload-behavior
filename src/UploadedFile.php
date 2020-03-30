@@ -31,7 +31,10 @@ class UploadedFile extends \yii\web\UploadedFile
         if (strncmp($file, 'data:', 5) == 0) {
             $fileParse = explode(',', $file);
             $file = $fileParse[1];
+        } else {
+            return null;
         }
+
         $fileDecoded = base64_decode($file);
         $f = finfo_open();
 
@@ -78,7 +81,7 @@ class UploadedFile extends \yii\web\UploadedFile
             $sizes = strlen($fileDecoded);
             $ext = BaseFileHelper::getExtensionsByMimeType($mimeType);
             $tempName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('upload_') . '.' . $ext[0];
-            if (!file_put_contents($tempName, $fileDecoded) ){
+            if (!file_put_contents($tempName, $fileDecoded)) {
                 throw new ErrorException('file write failed:' . $tempName);
             }
             if (!self::$_files) {
@@ -96,6 +99,7 @@ class UploadedFile extends \yii\web\UploadedFile
         }
         return isset(self::$_files[$name]) ? $fileInstances : null;
     }
+
     /**
      * Returns an uploaded file according to the given file input name.
      * The name can be a plain string or a string like an array element (e.g. 'Post[imageFile]', or 'Post[0][imageFile]').
@@ -106,11 +110,11 @@ class UploadedFile extends \yii\web\UploadedFile
     public static function getInstanceByName($name)
     {
         if (static::isBase64()) {
-            $file = Yii::$app->getRequest()->post($name);
-            return static::uploadBase64File($file, $name);
+            return null;
         }
         return parent::getInstanceByName($name);
     }
+
     /**
      * Returns an array of uploaded files corresponding to the specified file input name.
      * This is mainly used when multiple files were uploaded and saved as 'files[0]', 'files[1]',
@@ -123,17 +127,11 @@ class UploadedFile extends \yii\web\UploadedFile
     public static function getInstancesByName($name)
     {
         if (static::isBase64()) {
-            $file = Yii::$app->getRequest()->post($name);
-            $file = $model->$attribute;
-            if (is_array($file)) {
-                $files = $file;
-            } else {
-                $files = [$file];
-            }
-            return static::uploadBase64Files($files, $name);
+            return null;
         }
         return parent::getInstancesByName($name);
     }
+
     /**
      * Returns an uploaded file for the given model attribute.
      * The file should be uploaded using [[\yii\widgets\ActiveField::fileInput()]].
@@ -152,6 +150,7 @@ class UploadedFile extends \yii\web\UploadedFile
         $name = Html::getInputName($model, $attribute);
         return static::getInstanceByName($name);
     }
+
     /**
      * Returns all uploaded files for the given model attribute.
      * @param \yii\base\Model $model the data model
@@ -174,13 +173,14 @@ class UploadedFile extends \yii\web\UploadedFile
         $name = Html::getInputName($model, $attribute);
         return static::getInstancesByName($name);
     }
+
     /**
      * Saves the uploaded file.
      * Note that this method uses php's move_uploaded_file() method. If the target file `$file`
      * already exists, it will be overwritten.
      *
-     * @param string $file           the file path used to save the uploaded file
-     * @param bool   $deleteTempFile whether to delete the temporary file after saving.
+     * @param string $file the file path used to save the uploaded file
+     * @param bool $deleteTempFile whether to delete the temporary file after saving.
      *                               If true, you will not be able to save the uploaded file again in the current
      *                               request.
      *
@@ -194,9 +194,9 @@ class UploadedFile extends \yii\web\UploadedFile
         }
         if ($this->error == UPLOAD_ERR_OK) {
             if ($deleteTempFile) {
-                return rename($this->tempName , $file);
+                return rename($this->tempName, $file);
             } else {
-                return copy($this->tempName , $file);
+                return copy($this->tempName, $file);
             }
             $file = file_put_contents($file, base64_decode($this->tempName));
             return $file;
@@ -212,7 +212,7 @@ class UploadedFile extends \yii\web\UploadedFile
     public static function isBase64()
     {
         $mime = Yii::$app->request->getContentType();
-        if (strncasecmp ($mime,'application/json' ,16) === 0) {
+        if (strncasecmp($mime, 'application/json', 16) === 0) {
             return true;
         }
         if (strncasecmp($mime, 'text/json', 9) === 0) {
@@ -221,7 +221,7 @@ class UploadedFile extends \yii\web\UploadedFile
         if (strncasecmp($mime, 'application/javascript', 22) === 0) {
             return true;
         }
-        if (strncasecmp($mime ,'text/javascript', 15) === 0) {
+        if (strncasecmp($mime, 'text/javascript', 15) === 0) {
             return true;
         }
         return false;

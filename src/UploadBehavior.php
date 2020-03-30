@@ -430,7 +430,6 @@ class UploadBehavior extends \yii\base\Behavior
         return null;
     }
 
-
     /**
      * Replaces all placeholders in path variable with corresponding values.
      */
@@ -448,7 +447,6 @@ class UploadBehavior extends \yii\base\Behavior
             }
         }, $path);
     }
-
 
     /**
      * Saves the uploaded file.
@@ -485,7 +483,6 @@ class UploadBehavior extends \yii\base\Behavior
         return true;
     }
 
-
     /**
      * Deletes old file.
      * @param string $attribute
@@ -511,7 +508,6 @@ class UploadBehavior extends \yii\base\Behavior
             }
         }
     }
-
 
     /**
      * Get the UploadedFile
@@ -572,7 +568,6 @@ class UploadBehavior extends \yii\base\Behavior
         return Yii::getAlias($path);
     }
 
-
     /**
      * resolve file name
      * @param string $attribute
@@ -598,7 +593,6 @@ class UploadBehavior extends \yii\base\Behavior
         }
         return null;
     }
-
 
     /**
      * @param UploadedFile $file
