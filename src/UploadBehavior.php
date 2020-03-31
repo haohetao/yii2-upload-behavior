@@ -518,7 +518,6 @@ class UploadBehavior extends \yii\base\Behavior
     {
         $model = $this->owner;
         $multiple = $this->getAttributeConfig($attribute, 'multiple');
-        $instanceByName = $this->getAttributeConfig($attribute, 'instanceByName');
         if ($multiple) {
             $file = UploadedFile::getInstancesByName($attribute);
             if (!$file) {
