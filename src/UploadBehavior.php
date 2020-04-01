@@ -2,7 +2,6 @@
 
 namespace haohetao\file;
 
-
 use Closure;
 use Yii;
 use yii\base\ErrorException;
@@ -182,7 +181,6 @@ class UploadBehavior extends \yii\base\Behavior
      */
     protected function getAttributeConfig($attribute, $key)
     {
-
         if (is_array($attribute)) {
             $attributeConfig = $attribute;
         } else {
@@ -242,6 +240,7 @@ class UploadBehavior extends \yii\base\Behavior
     {
         /** @var BaseActiveRecord $model */
         $model = $this->owner;
+        \PC::debug($model);
         foreach ($this->attributes as $attribute => $attributeConfig) {
             if ($this->hasScenario($attributeConfig)) {
                 $file = $this->getAttributeValue($attribute);
@@ -249,12 +248,12 @@ class UploadBehavior extends \yii\base\Behavior
                     $file = $this->getUploadInstance($attribute);
                 }
                 if (!isset($this->files[$attribute]) && $this->validateFile($file)) {
-                    $model->setAttribute($attribute, $file);
+                    $model->$attribute = $file;
                     $this->files[$attribute] = $file;
                 } else {
-                    if ($model->getAttribute($attribute) == null) {
+                    if ($model->$attribute == null) {
                         $nullValue = $this->getAttributeConfig($attribute, 'nullValue');
-                        $model->setAttribute($attribute, $nullValue);
+                        $model->$attribute = $nullValue;
                     }
                 }
             }
@@ -278,7 +277,7 @@ class UploadBehavior extends \yii\base\Behavior
                     }
                 } else {
                     // Protect attribute
-                    unset($model->$attribute);
+                    $model->$attribute = $model->getOldAttribute($attribute);
                 }
             } else {
                 if (!$model->getIsNewRecord() && $model->isAttributeChanged($attribute)) {
@@ -290,7 +289,6 @@ class UploadBehavior extends \yii\base\Behavior
         }
         $this->fileSave();
     }
-
 
     /**
      * This method is called at the end of inserting or updating a record.
@@ -476,6 +474,7 @@ class UploadBehavior extends \yii\base\Behavior
                     throw new ErrorException('save file failed:' . $fileName);
                 }
                 $model->$attribute = $fileName;
+                \PC::debug($model,'model');
             }
         } catch (\Exception $exc) {
             throw $exc;//new \Exception('File save exception');
@@ -518,6 +517,7 @@ class UploadBehavior extends \yii\base\Behavior
     {
         $model = $this->owner;
         $multiple = $this->getAttributeConfig($attribute, 'multiple');
+        $instanceByName = $this->getAttributeConfig($attribute, 'instanceByName');
         if ($multiple) {
             $file = UploadedFile::getInstancesByName($attribute);
             if (!$file) {
