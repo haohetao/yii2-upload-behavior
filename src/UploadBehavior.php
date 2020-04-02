@@ -240,7 +240,6 @@ class UploadBehavior extends \yii\base\Behavior
     {
         /** @var BaseActiveRecord $model */
         $model = $this->owner;
-        \PC::debug($model);
         foreach ($this->attributes as $attribute => $attributeConfig) {
             if ($this->hasScenario($attributeConfig)) {
                 $file = $this->getAttributeValue($attribute);
@@ -474,7 +473,6 @@ class UploadBehavior extends \yii\base\Behavior
                     throw new ErrorException('save file failed:' . $fileName);
                 }
                 $model->$attribute = $fileName;
-                \PC::debug($model,'model');
             }
         } catch (\Exception $exc) {
             throw $exc;//new \Exception('File save exception');
