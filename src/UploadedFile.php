@@ -73,29 +73,33 @@ class UploadedFile extends \yii\web\UploadedFile
             if (strncmp($file, 'data:', 5) == 0) {
                 $fileParse = explode(',', $file);
                 $file = $fileParse[1];
+            } else {
+                $file = null;
             }
-            $fileDecoded = base64_decode($file);
-            $f = finfo_open();
+            if ($file) {
+                $fileDecoded = base64_decode($file);
+                $f = finfo_open();
 
-            $mimeType = finfo_buffer($f, $fileDecoded, FILEINFO_MIME_TYPE);
-            $sizes = strlen($fileDecoded);
-            $ext = BaseFileHelper::getExtensionsByMimeType($mimeType);
-            $tempName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('upload_') . '.' . $ext[0];
-            if (!file_put_contents($tempName, $fileDecoded)) {
-                throw new ErrorException('file write failed:' . $tempName);
+                $mimeType = finfo_buffer($f, $fileDecoded, FILEINFO_MIME_TYPE);
+                $sizes = strlen($fileDecoded);
+                $ext = BaseFileHelper::getExtensionsByMimeType($mimeType);
+                $tempName = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('upload_') . '.' . $ext[0];
+                if (!file_put_contents($tempName, $fileDecoded)) {
+                    throw new ErrorException('file write failed:' . $tempName);
+                }
+                if (!self::$_files) {
+                    self::$_files = [];
+                }
+                $fileObj = [
+                    'name' => "{$name}.{$ext[0]}",
+                    'tempName' => $tempName,
+                    'type' => $mimeType,
+                    'size' => $sizes,
+                    'error' => UPLOAD_ERR_OK,
+                ];
+                self::$_files[$name][] = $fileObj;
+                $fileInstances[] = new Static($fileObj);
             }
-            if (!self::$_files) {
-                self::$_files = [];
-            }
-            $fileObj = [
-                'name' => "{$name}.{$ext[0]}",
-                'tempName' => $tempName,
-                'type' => $mimeType,
-                'size' => $sizes,
-                'error' => UPLOAD_ERR_OK,
-            ];
-            self::$_files[$name][] = $fileObj;
-            $fileInstances[] = new Static($fileObj);
         }
         return isset(self::$_files[$name]) ? $fileInstances : null;
     }
