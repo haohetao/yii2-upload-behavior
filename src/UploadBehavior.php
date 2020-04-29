@@ -79,6 +79,10 @@ class UploadBehavior extends \yii\base\Behavior
      */
     public $instanceByName = false;
     /**
+     * @var string 当设置$instanceByName时使用的InputName，null时自动生成
+     */
+    public $instanceInputName = null;
+    /**
      * @var boolean|callable generate a new unique name for the file
      * set true or anonymous function takes the old filename and returns a new name.
      * @see self::generateFileName()
@@ -516,15 +520,63 @@ class UploadBehavior extends \yii\base\Behavior
         $model = $this->owner;
         $multiple = $this->getAttributeConfig($attribute, 'multiple');
         $instanceByName = $this->getAttributeConfig($attribute, 'instanceByName');
+        $instanceInputName = $this->getAttributeConfig($attribute, 'instanceInputName');
         if ($multiple) {
-            $file = UploadedFile::getInstancesByName($attribute);
-            if (!$file) {
-                $file = UploadedFile::getInstances($model, $attribute);
+            if (UploadBehavior::isBase64()) {
+                $file = UploadedFile::getInstancesByBase64($model, $attribute);
+            } else {
+                if ($instanceByName) {
+                    $file = UploadedFile::getInstancesByInputName($model, $attribute, $instanceInputName);
+                } else {
+                    $file = UploadedFile::getInstances($model, $attribute);
+                }
             }
         } else {
-            $file = UploadedFile::getInstanceByName($attribute);
-            if (!$file) {
-                $file = UploadedFile::getInstance($model, $attribute);
+            if (UploadBehavior::isBase64()) {
+                $file = UploadedFile::getInstanceByBase64($model, $attribute);
+            } else {
+                if ($instanceByName) {
+                    $file = UploadedFile::getInstanceByInputName($model, $attribute, $instanceInputName);
+                } else {
+                    $file = UploadedFile::getInstance($model, $attribute);
+                }
+            }
+        }
+        if (is_object($file)) {
+            $files = [$file];
+        } else {
+            $files = $file;
+        }
+        foreach ($files as $one) {
+            if ($one && $one->hasError) {
+                switch ($one->error) {
+                    case UPLOAD_ERR_INI_SIZE:
+                        $message = "The uploaded file exceeds the upload_max_filesize directive in php.ini";
+                        break;
+                    case UPLOAD_ERR_FORM_SIZE:
+                        $message = "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form";
+                        break;
+                    case UPLOAD_ERR_PARTIAL:
+                        $message = "The uploaded file was only partially uploaded";
+                        break;
+                    case UPLOAD_ERR_NO_FILE:
+                        $message = "No file was uploaded";
+                        break;
+                    case UPLOAD_ERR_NO_TMP_DIR:
+                        $message = "Missing a temporary folder";
+                        break;
+                    case UPLOAD_ERR_CANT_WRITE:
+                        $message = "Failed to write file to disk";
+                        break;
+                    case UPLOAD_ERR_EXTENSION:
+                        $message = "File upload stopped by extension";
+                        break;
+
+                    default:
+                        $message = "Unknown upload error";
+                        break;
+                }
+                throw new ErrorException($message);
             }
         }
         return $file;
@@ -639,5 +691,27 @@ class UploadBehavior extends \yii\base\Behavior
     protected function afterUpload()
     {
         $this->owner->trigger(self::EVENT_AFTER_UPLOAD);
+    }
+
+    /**
+     * 是否base64上传
+     * @return bool
+     */
+    public static function isBase64()
+    {
+        $mime = Yii::$app->request->getContentType();
+        if (strncasecmp($mime, 'application/json', 16) === 0) {
+            return true;
+        }
+        if (strncasecmp($mime, 'text/json', 9) === 0) {
+            return true;
+        }
+        if (strncasecmp($mime, 'application/javascript', 22) === 0) {
+            return true;
+        }
+        if (strncasecmp($mime, 'text/javascript', 15) === 0) {
+            return true;
+        }
+        return false;
     }
 }

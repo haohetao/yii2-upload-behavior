@@ -4,7 +4,6 @@ namespace haohetao\file;
 
 use yii\base\ErrorException;
 use yii\helpers\BaseFileHelper;
-use Yii;
 use yii\helpers\Html;
 
 /**
@@ -32,7 +31,7 @@ class UploadedFile extends \yii\web\UploadedFile
             $fileParse = explode(',', $file);
             $file = $fileParse[1];
         } else {
-            return null;
+            throw new ErrorException('错误的base64编码');
         }
 
         $fileDecoded = base64_decode($file);
@@ -63,10 +62,16 @@ class UploadedFile extends \yii\web\UploadedFile
      * @param string[] $inputName
      * @return UploadedFile[]|null
      */
-    public static function uploadBase64Files($files, $name)
+    public static function uploadBase64Files($model, $attribute)
     {
-        if (!is_array($files)) {
-            return null;
+        $attributeFile = $model->$attribute;
+        if (is_array($attributeFile)) {
+            $files = $attributeFile;
+        } else {
+            $files = [$attributeFile];
+        }
+        if (count($files) == 0) {
+            return [];
         }
         $fileInstances = [];
         foreach ($files as $file) {
@@ -74,7 +79,7 @@ class UploadedFile extends \yii\web\UploadedFile
                 $fileParse = explode(',', $file);
                 $file = $fileParse[1];
             } else {
-                $file = null;
+                throw new ErrorException('错误的base64编码或上传数据错误');
             }
             if ($file) {
                 $fileDecoded = base64_decode($file);
@@ -91,49 +96,17 @@ class UploadedFile extends \yii\web\UploadedFile
                     self::$_files = [];
                 }
                 $fileObj = [
-                    'name' => "{$name}.{$ext[0]}",
+                    'name' => "{$attribute}.{$ext[0]}",
                     'tempName' => $tempName,
                     'type' => $mimeType,
                     'size' => $sizes,
                     'error' => UPLOAD_ERR_OK,
                 ];
-                self::$_files[$name][] = $fileObj;
+                self::$_files[$attribute][] = $fileObj;
                 $fileInstances[] = new Static($fileObj);
             }
         }
-        return isset(self::$_files[$name]) ? $fileInstances : null;
-    }
-
-    /**
-     * Returns an uploaded file according to the given file input name.
-     * The name can be a plain string or a string like an array element (e.g. 'Post[imageFile]', or 'Post[0][imageFile]').
-     * @param string $name the name of the file input field.
-     * @return null|\yii\web\UploadedFile the instance of the uploaded file.
-     * Null is returned if no file is uploaded for the specified name.
-     */
-    public static function getInstanceByName($name)
-    {
-        if (static::isBase64()) {
-            return null;
-        }
-        return parent::getInstanceByName($name);
-    }
-
-    /**
-     * Returns an array of uploaded files corresponding to the specified file input name.
-     * This is mainly used when multiple files were uploaded and saved as 'files[0]', 'files[1]',
-     * 'files[n]'..., and you can retrieve them all by passing 'files' as the name.
-     * @param string $name the name of the array of files
-     * @return \yii\web\UploadedFile[] the array of UploadedFile objects. Empty array is returned
-     * if no adequate upload was found. Please note that this array will contain
-     * all files from all sub-arrays regardless how deeply nested they are.
-     */
-    public static function getInstancesByName($name)
-    {
-        if (static::isBase64()) {
-            return null;
-        }
-        return parent::getInstancesByName($name);
+        return $fileInstances;
     }
 
     /**
@@ -146,10 +119,27 @@ class UploadedFile extends \yii\web\UploadedFile
      * Null is returned if no file is uploaded for the specified model attribute.
      * @see getInstanceByName()
      */
-    public static function getInstance($model, $attribute)
+    public static function getInstanceByBase64($model, $attribute)
     {
-        if (static::isBase64()) {
-            return static::uploadBase64File($model->$attribute, $attribute);
+        return static::uploadBase64File($model->$attribute, $attribute);
+    }
+
+    /**
+     * Returns an uploaded file for the given model attribute.
+     * The file should be uploaded using [[\yii\widgets\ActiveField::fileInput()]].
+     * @param \yii\base\Model $model the data model
+     * @param string $attribute the attribute name. The attribute name may contain array indexes.
+     * For example, '[1]file' for tabular file uploading; and 'file[1]' for an element in a file array.
+     * @return null|\yii\web\UploadedFile the instance of the uploaded file.
+     * Null is returned if no file is uploaded for the specified model attribute.
+     * @see getInstanceByName()
+     */
+    public static function getInstanceByInputName($model, $attribute, $inputName)
+    {
+        if ($inputName) {
+            $name = $inputName;
+        } else {
+            $name = Html::getInputName($model, $attribute);
         }
         $name = Html::getInputName($model, $attribute);
         return static::getInstanceByName($name);
@@ -160,21 +150,31 @@ class UploadedFile extends \yii\web\UploadedFile
      * @param \yii\base\Model $model the data model
      * @param string $attribute the attribute name. The attribute name may contain array indexes
      * for tabular file uploading, e.g. '[1]file'.
+     * @param string $inputName form input name
      * @return \yii\web\UploadedFile[] array of UploadedFile objects.
      * Empty array is returned if no available file was found for the given attribute.
      */
-    public static function getInstances($model, $attribute)
+    public static function getInstancesByBase64($model, $attribute)
     {
-        if (static::isBase64()) {
-            $file = $model->$attribute;
-            if (is_array($file)) {
-                $files = $file;
-            } else {
-                $files = [$file];
-            }
-            return static::uploadBase64Files($files, $attribute);
+        return static::uploadBase64Files($model, $attribute);
+    }
+
+    /**
+     * Returns all uploaded files for the given model attribute.
+     * @param \yii\base\Model $model the data model
+     * @param string $attribute the attribute name. The attribute name may contain array indexes
+     * for tabular file uploading, e.g. '[1]file'.
+     * @param string $inputName form input name
+     * @return \yii\web\UploadedFile[] array of UploadedFile objects.
+     * Empty array is returned if no available file was found for the given attribute.
+     */
+    public static function getInstancesByInputName($model, $attribute, $inputName)
+    {
+        if ($inputName) {
+            $name = $inputName;
+        } else {
+            $name = Html::getInputName($model, $attribute);
         }
-        $name = Html::getInputName($model, $attribute);
         return static::getInstancesByName($name);
     }
 
@@ -193,7 +193,7 @@ class UploadedFile extends \yii\web\UploadedFile
      */
     public function saveAs($file, $deleteTempFile = true)
     {
-        if (!$this->isBase64()) {
+        if (!UploadBehavior::isBase64()) {
             return parent::saveAs($file, $deleteTempFile);
         }
         if ($this->error == UPLOAD_ERR_OK) {
@@ -209,25 +209,4 @@ class UploadedFile extends \yii\web\UploadedFile
         return false;
     }
 
-    /**
-     * 是否base64上传
-     * @return bool
-     */
-    public static function isBase64()
-    {
-        $mime = Yii::$app->request->getContentType();
-        if (strncasecmp($mime, 'application/json', 16) === 0) {
-            return true;
-        }
-        if (strncasecmp($mime, 'text/json', 9) === 0) {
-            return true;
-        }
-        if (strncasecmp($mime, 'application/javascript', 22) === 0) {
-            return true;
-        }
-        if (strncasecmp($mime, 'text/javascript', 15) === 0) {
-            return true;
-        }
-        return false;
-    }
 }
