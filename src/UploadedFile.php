@@ -141,7 +141,6 @@ class UploadedFile extends \yii\web\UploadedFile
         } else {
             $name = Html::getInputName($model, $attribute);
         }
-        $name = Html::getInputName($model, $attribute);
         return static::getInstanceByName($name);
     }
 
