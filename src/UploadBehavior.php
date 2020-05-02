@@ -176,7 +176,6 @@ class UploadBehavior extends \yii\base\Behavior
         ];
     }
 
-
     /**
      * Gets the attribute configuration, does not exist then gets the global configuration
      * @param string $attribute
@@ -188,7 +187,12 @@ class UploadBehavior extends \yii\base\Behavior
         if (is_array($attribute)) {
             $attributeConfig = $attribute;
         } else {
-            $attributeConfig = $this->attributes[$attribute];
+            if (isset($this->attributes[$attribute])) {
+                $attributeConfig = $this->attributes[$attribute];
+            } else {
+                throw new ErrorException("属性 $attribute 的配置不存在或指定了错误的属性名");
+            }
+
         }
         if ($key) {
             if (isset($attributeConfig[$key])) {
