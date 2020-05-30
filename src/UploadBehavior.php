@@ -551,7 +551,7 @@ class UploadBehavior extends \yii\base\Behavior
         } else if (is_array($file)) {
             $files = $file;
         }
-        if ($files) {
+        if (isset($files) && is_array($files)) {
             foreach ($files as $one) {
                 if ($one && $one->hasError) {
                     switch ($one->error) {

@@ -31,7 +31,7 @@ class UploadedFile extends \yii\web\UploadedFile
             $fileParse = explode(',', $file);
             $file = $fileParse[1];
         } else {
-            throw new ErrorException('错误的base64编码');
+            return null;
         }
 
         $fileDecoded = base64_decode($file);
