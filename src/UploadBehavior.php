@@ -546,9 +546,10 @@ class UploadBehavior extends \yii\base\Behavior
                 }
             }
         }
-        if (is_object($file)) {
+        $files = null;
+        if (isset($file) && is_object($file)) {
             $files = [$file];
-        } else if (is_array($file)) {
+        } else if (isset($file) && is_array($file)) {
             $files = $file;
         }
         if (isset($files) && is_array($files)) {
